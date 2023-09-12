@@ -19,6 +19,7 @@ import java.util.*;
  * Esta clase representa una clase que evalúa expresiones en notación polaca o
  * postfija. Por ejemplo: 4 5 +
  */
+
 public class EvaluadorPostfijo {
 
     /**
@@ -118,12 +119,73 @@ public class EvaluadorPostfijo {
      * @param expresion una lista de elementos con números u operadores
      * @return el resultado de la evaluación de la expresión.
      */
+
     static int evaluarPostFija(List<String> expresion) {
         Stack<Integer> pila = new Stack<>();
-
         // TODO: Realiza la evaluación de la expresión en formato postfijo
+        for (String elemento : expresion) {
+            if (esNumero(elemento)) {
+                // Si el elemento es un número, lo convierte a entero y lo coloca en la pila
+                pila.push(Integer.parseInt(elemento));
+            } else if (esOperador(elemento)) {
+                // Si el elemento es un operador, saca los dos operandos superiores de la pila,
+                // aplica el operador y coloca el resultado nuevamente en la pila.
+                int oper2 = pila.pop();
+                int oper1 = pila.pop();
+                int resultado = aplicarOperador(elemento, oper1, oper2);
+                pila.push(resultado);
+            }
+        }
 
+        // Al final, el resultado estará en la cima de la pila
         return pila.pop();
     }
 
+    /**
+     * Verifica si un elemento es un número.
+     */
+    static boolean esNumero(String elemento) {
+        try {
+            Integer.parseInt(elemento);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Verifica si un elemento es un operador.
+     */
+    static boolean esOperador(String elemento) {
+        List<String> operadores = List.of("+", "-", "*", "/", "%");
+        return operadores.contains(elemento);
+    }
+
+    /**
+     * Aplica un operador a dos operandos y devuelve el resultado.
+     */
+    static int aplicarOperador(String operador, int oper1, int oper2) {
+        switch (operador) {
+            case "+":
+                return oper1 + oper2;
+            case "-":
+                return oper1 - oper2;
+            case "*":
+                return oper1 * oper2;
+            case "/":
+                if (oper2 != 0) {
+                    return oper1 / oper2;
+                } else {
+                    throw new ArithmeticException("División por cero");
+                }
+            case "%":
+                if (oper2 != 0) {
+                    return oper1 % oper2;
+                } else {
+                    throw new ArithmeticException("Módulo por cero");
+                }
+            default:
+                throw new IllegalArgumentException("Operador no válido: " + operador);
+        }
+    }
 }
